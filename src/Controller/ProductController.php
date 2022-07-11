@@ -15,7 +15,7 @@ class ProductController extends AbstractController
     /**
      * @Route("/Currency")
      */
-    public function number(ManagerRegistry $doctrine): Response
+    public function download(ManagerRegistry $doctrine): Response
     {
         $curl = curl_init('http://api.nbp.pl/api/exchangerates/tables/a?format=xml');
         curl_setopt_array($curl, Array(
@@ -26,24 +26,42 @@ class ProductController extends AbstractController
         $xml = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
         $array = json_decode(json_encode((array)$xml), TRUE);
         $rates = $array['ExchangeRatesTable']['Rates']['Rate'];
+        $i = 0;
+        $tab = [];
+        echo "<table>";
         foreach($rates as $key => $value)
         {
             $entityManager= $doctrine->getManager();
             $currency = $value['Currency'];
             $code = $value['Code'];
             $mid = $value['Mid'];
+
+            if (!array_key_exists($key,$array))
+                {
+                    $tab[$i][0] = $currency;
+                    $tab[$i][1] = $code;
+                    $tab[$i][2] = $mid;
+                    echo " <td>
+                    <tr> ".$tab[$i][0]." </tr>
+                    <tr> ".$tab[$i][1]." </tr>
+                    <tr> ".$tab[$i][2]." </tr> </br>
+                    ";
+                }
             /* $entity = new Currency();
             $entity -> setName($currency);
             $entity -> setCurrencyCode($code);
             $entity -> setExchangeRate($mid);
             $entityManager->persist($entity); */
-            echo $currency."<br>"; 
+            $i+=1;
         }
-        return $this->render('currency.html.twig', [
-            'currency' => $currency,
-            'code' => $code,
-            'mid' => $mid
-        ]);
+        echo "</table>";
+        return $this->render('currency.html.twig');
+        
+    }
+    
+    public function upload($currency, $code, $mid): Response
+    {
+        
     }
 }
 ?>
