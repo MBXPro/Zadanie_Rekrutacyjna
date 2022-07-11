@@ -26,8 +26,35 @@ class ProductController extends AbstractController
                     echo " <td>
                     <tr> ".$tab[$i][0]." </tr>
                     <tr> ".$tab[$i][1]." </tr>
-                    <tr> ".$tab[$i][2]." </tr> </br>
+                    <tr> ".$tab[$i][2]." </tr> 
+                    <tr> ".$tab[$i][3]." </tr> </br>
                     ";
+            /* $entity = new Currency();
+            $entity -> setName($currency);
+            $entity -> setCurrencyCode($code);
+            $entity -> setExchangeRate($mid);
+            $entityManager->persist($entity); 
+            
+            Polecenie do dodania do bazy danych (z działajacym połączeniem):
+            ...$ins_query="INSERT INTO `Currency` (`id`, `name`, `currency_code`, `exchange_rate`) 
+            VALUES (NULL, '$currency', '$code', '$mid');";
+            if(mysqli_query($conn,$ins_query);...
+            */
+        }
+        function update(string $currency,float $mid,$i)
+        {
+                    $tab[$i][1] = $currency;
+                    $tab[$i][3] = $mid;
+                    echo " <td>
+                    <tr> ".$tab[$i][0]." </tr>
+                    <tr> ".$tab[$i][1]." </tr>
+                    <tr> ".$tab[$i][2]." </tr> 
+                    <tr> ".$tab[$i][3]." </tr> </br>
+                    ";
+                    /* Polecenie do dodania do bazy danych (z działajacym połączeniem):
+            ...$upt_query="UPDATE `Currency` SET `name`='$currency', `currency_code`='$code',`exchange_rate`='$mid';
+            mysqli_query($conn,$upt_query);...
+            */
         }
         $curl = curl_init('http://api.nbp.pl/api/exchangerates/tables/a?format=xml');
         curl_setopt_array($curl, Array(
@@ -48,16 +75,15 @@ class ProductController extends AbstractController
             $code = $value['Code'];
             $mid = $value['Mid'];
 
-            if (!array_key_exists($key,$array))
-                {
-                    upload($key,$currency,$code,$mid,$i);
-                    
-                }
-            /* $entity = new Currency();
-            $entity -> setName($currency);
-            $entity -> setCurrencyCode($code);
-            $entity -> setExchangeRate($mid);
-            $entityManager->persist($entity); */
+            if (!array_key_exists($key,$array) || $value['id']==$i)
+            {
+                upload($key,$currency,$code,$mid,$i); 
+            }
+            else 
+            {
+                update($currency,$mid,$i);
+            }
+
             $i+=1;
         }
         echo "</table>";
