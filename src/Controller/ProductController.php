@@ -17,6 +17,18 @@ class ProductController extends AbstractController
      */
     public function download(ManagerRegistry $doctrine): Response
     {
+        function upload(int $key,string $currency,string $code,float $mid,int $i)
+        {
+            $tab[$i][0] = $key;
+                    $tab[$i][1] = $currency;
+                    $tab[$i][2] = $code;
+                    $tab[$i][3] = $mid;
+                    echo " <td>
+                    <tr> ".$tab[$i][0]." </tr>
+                    <tr> ".$tab[$i][1]." </tr>
+                    <tr> ".$tab[$i][2]." </tr> </br>
+                    ";
+        }
         $curl = curl_init('http://api.nbp.pl/api/exchangerates/tables/a?format=xml');
         curl_setopt_array($curl, Array(
             CURLOPT_RETURNTRANSFER => TRUE,
@@ -38,14 +50,8 @@ class ProductController extends AbstractController
 
             if (!array_key_exists($key,$array))
                 {
-                    $tab[$i][0] = $currency;
-                    $tab[$i][1] = $code;
-                    $tab[$i][2] = $mid;
-                    echo " <td>
-                    <tr> ".$tab[$i][0]." </tr>
-                    <tr> ".$tab[$i][1]." </tr>
-                    <tr> ".$tab[$i][2]." </tr> </br>
-                    ";
+                    upload($key,$currency,$code,$mid,$i);
+                    
                 }
             /* $entity = new Currency();
             $entity -> setName($currency);
@@ -59,9 +65,6 @@ class ProductController extends AbstractController
         
     }
     
-    public function upload($currency, $code, $mid): Response
-    {
-        
-    }
+
 }
 ?>
